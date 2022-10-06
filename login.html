@@ -49,7 +49,7 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
-
+        //import functions related to firebase
         import{getDatabase, ref, get, child, update, remove} from "https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js";
 
         const db = getDatabase();
@@ -69,12 +69,20 @@
         let signBtn = document.getElementById("Sign Up");
     // sign up
         function insertData() {
+            const dbref = ref(db);
+            get(child(dbref,"profiles/"+nameBox.value)).then((snapshot)=>{
+                let profile = snapshot.val();
+                console.log(profile);
+                if (snapshot.exists()){
+                    console.log("Already have it");
+                    alert("Username taken");
+                    return 0;
+                }});
             if (ageBox.value==="" || passwordBox.value==="" || genBox.value==="" || nameBox.value===""){
                 alert("Complete the Form please!");
             }
             else{
                 update(ref(db,"profiles/"+ nameBox.value),{
-                    // NameOfStd: nameBox.value,
                     Age: ageBox.value,
                     Gender: genBox.value,
                     Origin: originBox.value,
