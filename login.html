@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title> 
+</head>
+<body style="text-align: center; background-image: url('JapFall.jpeg');">
+<div id="signUp" style="display: block; padding-top: 25vh">
+    <h1 style="color: #3b9d0a;">Sign Up</h1><hr style="width: 10vw">
+    <label for="NameBox"></label><input type="text" placeholder="Name" id="NameBox"><br>
+    <label for="AgeBox"></label><input type="text" placeholder="Age" id="AgeBox"><br>
+    <label for="GenderBox"></label><input type="text" placeholder="Gender" id="GenderBox"><br>
+    <label for="OriginBox"></label><input type="text" placeholder="Origin" id="OriginBox"><br>
+    <label for="PasswordBox"></label><input type="text" placeholder="Password" id="PasswordBox"><br>
+    <button id="instBtn">submit</button><br><br>
+    <button id="Log In">Log In</button>
+    <br>
+</div>
+<div id="login" style="display: none; padding-top: 25vh">
+    <h1 style="color: #7a18ec">Log In</h1>
+    <label for="LNameBox"></label><input type="text" placeholder="Name" id="LNameBox"><br>
+    <label for="LPasswordBox"></label><input type="text" placeholder="Password" id="LPasswordBox"><br>
+    <button id="selectBtn">submit</button><br><br>
+    <button id="Sign Up">Sign Up</button>
+</div>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyCuI6qWnKp3ky_bqdl9Dxuocp4O7ggqMsI",
+            authDomain: "miraz-fa035.firebaseapp.com",
+            databaseURL: "https://miraz-fa035.firebaseio.com",
+            projectId: "miraz-fa035",
+            storageBucket: "miraz-fa035.appspot.com",
+            messagingSenderId: "130767717396",
+            appId: "1:130767717396:web:ff0bc1b023207d154bd301",
+            measurementId: "G-KFJ0P2LYKB"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+
+        import{getDatabase, ref, get, child, update, remove} from "https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js";
+
+        const db = getDatabase();
+        //sign up box
+        let nameBox = document.getElementById("NameBox");
+        let ageBox = document.getElementById("AgeBox");
+        let genBox = document.getElementById("GenderBox");
+        let originBox=document.getElementById("OriginBox");
+        let passwordBox=document.getElementById("PasswordBox");
+        //loginBox
+        let LNameBox = document.getElementById("LNameBox");
+        let LPasswordBox=document.getElementById("LPasswordBox");
+        //add more inputBox if required
+        let instBtn = document.getElementById("instBtn");
+        let selectBtn=document.getElementById("selectBtn");
+        let loginBtn= document.getElementById("Log In");
+        let signBtn = document.getElementById("Sign Up");
+    // sign up
+        function insertData() {
+            if (ageBox.value==="" || passwordBox.value==="" || genBox.value==="" || nameBox.value===""){
+                alert("Complete the Form please!");
+            }
+            else{
+                update(ref(db,"profiles/"+ nameBox.value),{
+                    // NameOfStd: nameBox.value,
+                    Age: ageBox.value,
+                    Gender: genBox.value,
+                    Origin: originBox.value,
+                    Password: passwordBox.value
+                    //add more in format-> ,FieldName : FieldBox.value
+                })
+                    .then(()=>{
+                        console.log("Data Stored");
+                    })
+                    .catch((error)=>{
+                        alert("Unsuccessful, error"+error);
+                    })
+            }
+
+        }
+    //log in
+        function selectData() {
+            if (LNameBox.value===""){
+                alert("insert name");
+                return;
+            }
+            const dbref = ref(db);
+
+            get(child(dbref,"profiles/"+ LNameBox.value + "/Password")).then((snapshot)=>{
+                let profile = snapshot.val();
+                console.log(profile);
+                if (snapshot.exists() && snapshot.val() === LPasswordBox.value){
+                    //redirect to login page
+                    location.replace("index.html");
+                    console.log("Logged In Successfully");
+                }
+                else{
+                    alert("Wrong Username or Password");
+                }
+            })
+                .catch((error)=>{
+                    alert("Unsuccessful, error"+error);
+                })
+        }
+    //button work
+        instBtn.addEventListener('click', insertData);
+        selectBtn.addEventListener('click', selectData);
+        loginBtn.addEventListener('click',()=> changeTo('login'));
+        signBtn.addEventListener('click',()=> changeTo('signUp'));
+        // Show the current tab, and add an "active" class to the button that opened the tab
+        function changeTo(logSign) {
+            document.getElementById(logSign).style.display= "block";
+            if (logSign === 'login'){
+                document.getElementById('signUp').style.display = "none";
+            }
+            else{
+                document.getElementById('login').style.display = 'none';
+            }
+        }
+
+    </script>
+</body>
+</html>
